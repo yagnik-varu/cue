@@ -1,0 +1,30 @@
+I want to make a new project to take notes. my problem is sometime i remember thing acciidently 
+but i don't have notes so i forget it.
+
+i want to make one platform which is conneccted with mobile device, website and also want to integrate chatbot.
+
+i want to make this site authenticated so my data will be safe .
+
+i also want to make functionality that it will remind me for my task.
+
+i want to make it secure. with easy to use feature .
+
+also want to add a browser extention support so i can take quick notes from it.
+
+for security we can add authenticator app which is helpfull to login in device with short username or something.
+
+
+look for my requirement and search accross web. existing note takers. how can we make it more usefull.
+
+which feature we can introduce new . 
+
+also this on the all the platform web, mobile and extention it should be easy to use.
+
+if i am taking notes in hurry later i can group it or mark complete like todo feature convert that notes into todo.
+
+search in web take time explore sources first than review them one by one.
+
+find real problem that people are facing. 
+
+
+we are not making plan for the systemarchitecture now we will just grab all the feature first and make it usefull.

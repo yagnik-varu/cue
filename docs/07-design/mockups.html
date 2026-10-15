@@ -1,0 +1,928 @@
+<title>Cue UI Mockups</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap">
+<style>
+/* Cue design tokens: copy these EXACTLY into packages/ui-tokens (see docs/07-design/ui-ux-design.md §3).
+   Layout concept: a calm gallery of device frames on a neutral canvas; every frame is built only from the Cue tokens. */
+:root {
+  /* Colour tokens (light) */
+  --background: #FFFFFF;
+  --foreground: #18181B;
+  --card: #FFFFFF;
+  --muted: #F4F4F5;
+  --muted-foreground: #63636B;
+  --border: #E4E4E7;
+  --primary: #4F46E5;
+  --primary-foreground: #FFFFFF;
+  --accent: #EEF2FF;
+  --accent-foreground: #3730A3;
+  --destructive: #DC2626;
+  --ring: #6366F1;
+  --sidebar: #FAFAFA;
+  --overdue: #DC2626;
+  --important: #B45309;
+  --success: #15803D;
+  --swipe-todo: #4F46E5;
+  --swipe-done: #15803D;
+  --swipe-archive: #52525B;
+  --swipe-foreground: #FFFFFF;           /* icon/label colour on swipe backgrounds (both themes) */
+  --scrim: rgba(9, 9, 11, 0.40); /* dim layer behind sheets and dialogs */
+  /* Page-only tokens for this mockup gallery (NOT part of the Cue app) */
+  --canvas: #ECECEF;
+  --frame: #18181B;
+  --keyboard: #D4D4D8;
+
+  /* Radii */
+  --radius-sm: 6px; --radius-md: 10px; --radius-lg: 14px; --radius-xl: 20px; --radius-full: 999px;
+  /* Spacing (4-pt grid) */
+  --s1: 4px; --s2: 8px; --s3: 12px; --s4: 16px; --s5: 20px; --s6: 24px; --s8: 32px; --s10: 40px; --s12: 48px;
+  /* Type */
+  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, "JetBrains Mono", "Cascadia Mono", Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --background: #09090B; --foreground: #FAFAFA; --card: #18181B; --muted: #27272A;
+    --muted-foreground: #A1A1AA; --border: #27272A; --primary: #818CF8; --primary-foreground: #1E1B4B;
+    --accent: #1E1B4B; --accent-foreground: #C7D2FE; --destructive: #DC2626; --ring: #818CF8;
+    --sidebar: #0F0F12; --overdue: #F87171; --important: #FBBF24; --success: #4ADE80;
+    --swipe-todo: #4F46E5; --swipe-done: #15803D; --swipe-archive: #52525B; --swipe-foreground: #FFFFFF;
+    --scrim: rgba(0, 0, 0, 0.60); --canvas: #131316; --frame: #3F3F46; --keyboard: #27272A;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --background: #09090B; --foreground: #FAFAFA; --card: #18181B; --muted: #27272A;
+  --muted-foreground: #A1A1AA; --border: #27272A; --primary: #818CF8; --primary-foreground: #1E1B4B;
+  --accent: #1E1B4B; --accent-foreground: #C7D2FE; --destructive: #DC2626; --ring: #818CF8;
+  --sidebar: #0F0F12; --overdue: #F87171; --important: #FBBF24; --success: #4ADE80;
+  --swipe-todo: #4F46E5; --swipe-done: #15803D; --swipe-archive: #52525B; --swipe-foreground: #FFFFFF;
+  --scrim: rgba(0, 0, 0, 0.60); --canvas: #131316; --frame: #3F3F46; --keyboard: #27272A;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--canvas); color: var(--foreground);
+  font-family: var(--font-sans); font-size: 14px; line-height: 20px;
+  -webkit-font-smoothing: antialiased;
+}
+.page {
+  max-width: 1360px; margin: 0 auto;
+  padding-block: var(--s8) var(--s12);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: flex; flex-direction: column; gap: var(--s12);
+}
+h1, h2, h3 { margin: 0; text-wrap: balance; }
+p { margin: 0; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+/* ---------- Gallery chrome ---------- */
+.intro { display: flex; flex-wrap: wrap; gap: var(--s4); align-items: flex-end; justify-content: space-between; }
+.intro-text { display: flex; flex-direction: column; gap: var(--s2); max-width: 680px; min-width: 0; }
+.intro h1 { font-size: 28px; line-height: 34px; font-weight: 600; letter-spacing: -0.01em; }
+.intro p { color: var(--muted-foreground); font-size: 15px; line-height: 24px; }
+.theme-toggle { display: inline-flex; gap: 2px; padding: 3px; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-full); }
+.theme-toggle button { border: 0; background: transparent; padding: 6px 14px; border-radius: var(--radius-full); cursor: pointer; font-size: 13px; font-weight: 500; color: var(--muted-foreground); }
+.theme-toggle button[aria-pressed="true"] { background: var(--primary); color: var(--primary-foreground); }
+
+.section { display: flex; flex-direction: column; gap: var(--s6); }
+.section-head { display: flex; flex-direction: column; gap: var(--s1); }
+.section-head h2 { font-size: 20px; line-height: 28px; font-weight: 600; }
+.section-head p { color: var(--muted-foreground); max-width: 720px; }
+.eyebrow { font-size: 12px; line-height: 16px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--primary); }
+
+.gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 360px), 1fr)); gap: var(--s10) var(--s8); justify-items: center; }
+.figure { display: flex; flex-direction: column; gap: var(--s3); width: 100%; max-width: 360px; min-width: 0; }
+.figure.wide { max-width: none; }
+.caption { display: flex; flex-direction: column; gap: 2px; }
+.caption strong { font-size: 14px; font-weight: 600; }
+.caption span { font-size: 13px; line-height: 18px; color: var(--muted-foreground); }
+.scroll-x { overflow-x: auto; padding-bottom: var(--s2); }
+
+/* ---------- Icons (Lucide style) ---------- */
+.i { width: 20px; height: 20px; flex: none; stroke: currentColor; fill: none; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+.i-sm { width: 14px; height: 14px; }
+.i-md { width: 18px; height: 18px; }
+.i-lg { width: 24px; height: 24px; }
+
+/* ---------- Shared components ---------- */
+.chip {
+  display: inline-flex; align-items: center; gap: 4px; height: 24px; padding: 0 8px;
+  border-radius: var(--radius-full); background: var(--muted); color: var(--muted-foreground);
+  font-size: 12px; line-height: 16px; font-weight: 500; white-space: nowrap;
+}
+.chip.reminder { background: var(--accent); color: var(--accent-foreground); }
+.chip.overdue { background: transparent; color: var(--overdue); box-shadow: inset 0 0 0 1px var(--overdue); }
+.chip.important { background: transparent; color: var(--important); padding: 0 4px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.kbd { display: inline-flex; align-items: center; justify-content: center; min-width: 20px; height: 20px; padding: 0 5px; border: 1px solid var(--border); border-bottom-width: 2px; border-radius: 5px; font-family: var(--font-mono); font-size: 11px; color: var(--muted-foreground); background: var(--card); }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 40px; padding: 0 16px; border-radius: var(--radius-md); border: 1px solid transparent; font-size: 14px; font-weight: 500; cursor: pointer; }
+.btn.primary { background: var(--primary); color: var(--primary-foreground); }
+.btn.outline { background: var(--card); border-color: var(--border); color: var(--foreground); }
+.btn.ghost { background: transparent; color: var(--foreground); }
+.btn.block { width: 100%; height: 48px; font-size: 16px; }
+.btn[aria-disabled="true"] { opacity: 0.45; cursor: not-allowed; }
+.btn.web { height: 32px; padding: 0 12px; border-radius: 8px; font-size: 13px; }
+.link { color: var(--primary); font-weight: 500; text-decoration: none; }
+.check {
+  width: 22px; height: 22px; flex: none; border-radius: 50%; border: 1.75px solid var(--muted-foreground);
+  display: inline-flex; align-items: center; justify-content: center; color: var(--primary-foreground);
+}
+.check.done { background: var(--success); border-color: var(--success); }
+.check.important { border-color: var(--important); }
+.check.square { border-radius: 6px; width: 20px; height: 20px; }
+.switch { width: 44px; height: 26px; border-radius: var(--radius-full); background: var(--primary); position: relative; flex: none; }
+.switch::after { content: ""; position: absolute; top: 3px; right: 3px; width: 20px; height: 20px; border-radius: 50%; background: var(--primary-foreground); }
+.logo { width: 24px; height: 24px; border-radius: 7px; background: var(--primary); color: var(--primary-foreground); display: inline-flex; align-items: center; justify-content: center; flex: none; }
+.logo svg { width: 16px; height: 16px; }
+.muted { color: var(--muted-foreground); }
+
+/* ---------- Phone frame ---------- */
+.phone {
+  width: 100%; max-width: 360px; height: 760px; border-radius: 36px; padding: 8px;
+  background: var(--frame); box-shadow: 0 1px 2px rgba(0,0,0,0.08), 0 12px 32px rgba(0,0,0,0.10);
+}
+.screen {
+  height: 100%; border-radius: 28px; overflow: hidden; position: relative;
+  background: var(--background); display: flex; flex-direction: column;
+}
+.statusbar { height: 28px; flex: none; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.statusbar .dots { display: flex; gap: 4px; align-items: center; }
+.statusbar .dots span { width: 14px; height: 8px; border-radius: 2px; background: var(--foreground); opacity: 0.8; }
+.topbar { height: 56px; flex: none; display: flex; align-items: center; gap: var(--s2); padding: 0 var(--s2) 0 var(--s4); }
+.topbar h3 { flex: 1; font-size: 20px; line-height: 28px; font-weight: 600; }
+.iconbtn { width: 48px; height: 48px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; color: var(--foreground); flex: none; }
+.avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--accent); color: var(--accent-foreground); font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; }
+.content { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+.list { display: flex; flex-direction: column; }
+.row { display: flex; gap: var(--s3); align-items: flex-start; padding: 14px var(--s4); min-height: 64px; background: var(--background); border-bottom: 1px solid var(--border); }
+.row .body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.row .title { font-size: 16px; line-height: 22px; overflow-wrap: anywhere; }
+.row .title.done { color: var(--muted-foreground); text-decoration: line-through; }
+.row .meta { font-size: 13px; line-height: 18px; color: var(--muted-foreground); }
+.row .check { margin-top: 1px; }
+.swipe { position: relative; overflow: hidden; border-bottom: 1px solid var(--border); }
+.swipe .action { position: absolute; inset: 0; background: var(--swipe-todo); color: var(--swipe-foreground); display: flex; align-items: center; gap: 8px; padding-left: 20px; font-size: 14px; font-weight: 600; }
+.swipe .row { transform: translateX(112px); border-bottom: 0; box-shadow: -1px 0 0 var(--border); }
+.section-label { display: flex; align-items: center; justify-content: space-between; padding: 16px 16px 6px; font-size: 13px; line-height: 18px; font-weight: 600; color: var(--muted-foreground); }
+.section-label.overdue { color: var(--overdue); }
+.fab {
+  position: absolute; right: 16px; bottom: 84px; width: 56px; height: 56px; border-radius: 16px;
+  background: var(--primary); color: var(--primary-foreground); display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 6px rgba(79,70,229,0.25), 0 8px 20px rgba(79,70,229,0.20);
+}
+.fab .i { width: 26px; height: 26px; stroke-width: 2; }
+.bottomnav { height: 68px; flex: none; display: flex; border-top: 1px solid var(--border); background: var(--background); padding-bottom: 4px; }
+.bottomnav a { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: var(--muted-foreground); font-size: 12px; font-weight: 500; text-decoration: none; position: relative; }
+.bottomnav a .pill { width: 56px; height: 30px; border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; }
+.bottomnav a[aria-current="page"] { color: var(--foreground); font-weight: 600; }
+.bottomnav a[aria-current="page"] .pill { background: var(--accent); color: var(--accent-foreground); }
+.badge { position: absolute; top: 6px; left: calc(50% + 8px); min-width: 18px; height: 18px; padding: 0 5px; border-radius: var(--radius-full); background: var(--primary); color: var(--primary-foreground); font-size: 11px; font-weight: 600; line-height: 18px; text-align: center; }
+.banner { margin: 8px 16px 0; padding: 10px 12px; border-radius: var(--radius-md); background: var(--accent); color: var(--accent-foreground); display: flex; align-items: center; gap: 8px; font-size: 14px; }
+.banner .grow { flex: 1; }
+.collapsed { display: flex; align-items: center; gap: 6px; padding: 14px 16px; color: var(--muted-foreground); font-size: 14px; font-weight: 500; }
+
+/* capture + editor */
+.capture-top { height: 56px; flex: none; display: flex; align-items: center; justify-content: space-between; padding: 0 8px; }
+.capture-top .hint { font-size: 13px; color: var(--muted-foreground); }
+.capture-field { padding: 8px 20px; font-size: 20px; line-height: 30px; flex: 1; }
+.caret { display: inline-block; width: 2px; height: 24px; background: var(--primary); vertical-align: -5px; margin-left: 1px; }
+mark.date { background: var(--accent); color: var(--primary); border-radius: 4px; padding: 0 3px; font-weight: 500; }
+.preview { padding: 0 20px 12px; }
+.accessory { height: 52px; flex: none; display: flex; align-items: center; gap: 4px; padding: 0 8px; border-top: 1px solid var(--border); background: var(--background); }
+.accessory .spacer { flex: 1; }
+.accessory .btn { height: 36px; }
+.keyboard { height: 236px; flex: none; background: var(--keyboard); display: grid; grid-template-columns: repeat(10, 1fr); gap: 6px; padding: 10px 6px; align-content: start; }
+.keyboard span { height: 42px; border-radius: 6px; background: var(--background); opacity: 0.85; }
+.keyboard span.w2 { grid-column: span 2; } .keyboard span.w6 { grid-column: span 6; }
+.editor-title { padding: 4px 20px 8px; font-size: 22px; line-height: 30px; font-weight: 600; }
+.editor-chips { padding: 0 20px 14px; }
+.editor-body { padding: 0 20px; font-size: 16px; line-height: 26px; display: flex; flex-direction: column; gap: 8px; }
+.todo-line { display: flex; gap: 10px; align-items: center; }
+.todo-line.done span:last-child { color: var(--muted-foreground); text-decoration: line-through; }
+
+/* sheet */
+.dim { position: absolute; inset: 0; background: var(--scrim); }
+.sheet { position: absolute; left: 0; right: 0; bottom: 0; background: var(--card); border-radius: var(--radius-xl) var(--radius-xl) 0 0; padding: 8px 16px 20px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 -8px 24px rgba(0,0,0,0.12); }
+.grabber { width: 36px; height: 4px; border-radius: var(--radius-full); background: var(--border); align-self: center; margin-bottom: 2px; }
+.sheet h4 { margin: 0; font-size: 17px; line-height: 24px; font-weight: 600; }
+.sheet .sub { font-size: 13px; line-height: 18px; color: var(--muted-foreground); }
+.quick { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.quick button { text-align: left; border: 1px solid var(--border); background: var(--background); border-radius: var(--radius-lg); padding: 10px 12px; display: flex; flex-direction: column; gap: 2px; cursor: pointer; }
+.quick button b { font-size: 14px; font-weight: 500; }
+.quick button small { font-size: 12px; color: var(--muted-foreground); font-variant-numeric: tabular-nums; }
+.sheet-rows { display: flex; flex-direction: column; border-top: 1px solid var(--border); }
+.sheet-row { display: flex; align-items: center; gap: 12px; min-height: 52px; border-bottom: 1px solid var(--border); font-size: 15px; }
+.sheet-row .grow { flex: 1; display: flex; flex-direction: column; }
+.sheet-row .value { color: var(--muted-foreground); font-size: 14px; }
+
+/* approve + onboarding */
+.center-stack { flex: 1; display: flex; flex-direction: column; gap: 20px; padding: 16px 24px 24px; }
+.shield { width: 52px; height: 52px; border-radius: 16px; background: var(--accent); color: var(--accent-foreground); display: flex; align-items: center; justify-content: center; }
+.device-card { border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px 16px; display: flex; flex-direction: column; gap: 2px; }
+.device-card b { font-size: 16px; font-weight: 600; }
+.numbers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.numbers button { height: 72px; border-radius: var(--radius-lg); border: 1px solid var(--border); background: var(--card); font-size: 28px; font-weight: 600; font-variant-numeric: tabular-nums; cursor: pointer; }
+.steps { font-size: 13px; color: var(--muted-foreground); font-weight: 500; }
+.codes { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px; padding: 14px 16px; border-radius: var(--radius-lg); background: var(--muted); font-family: var(--font-mono); font-size: 14px; line-height: 20px; font-variant-numeric: tabular-nums; }
+.btn-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.btn-row .btn { height: 40px; padding: 0 8px; font-size: 13px; }
+.checkline { display: flex; align-items: center; gap: 10px; font-size: 15px; }
+
+/* ---------- Web frame ---------- */
+.browser { min-width: 1024px; max-width: 1280px; height: 760px; border-radius: 12px; border: 1px solid var(--border); overflow: hidden; display: flex; flex-direction: column; background: var(--background); box-shadow: 0 12px 32px rgba(0,0,0,0.10); }
+.browser.small { min-width: 0; max-width: 760px; height: 470px; }
+.browser-bar { height: 40px; flex: none; display: flex; align-items: center; gap: 12px; padding: 0 14px; background: var(--muted); border-bottom: 1px solid var(--border); }
+.browser-bar .lights { display: flex; gap: 6px; }
+.browser-bar .lights span { width: 10px; height: 10px; border-radius: 50%; background: var(--border); }
+.browser-bar .url { flex: 1; max-width: 420px; height: 26px; border-radius: var(--radius-full); background: var(--background); color: var(--muted-foreground); font-size: 12px; display: flex; align-items: center; padding: 0 12px; }
+.app { flex: 1; display: flex; min-height: 0; position: relative; }
+.sidebar { width: 232px; flex: none; background: var(--sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 12px 8px; gap: 2px; }
+.brand { display: flex; align-items: center; gap: 8px; padding: 4px 8px 12px; font-weight: 600; font-size: 15px; }
+.side-actions { display: flex; flex-direction: column; gap: 2px; padding-bottom: 8px; }
+.nav-item { height: 32px; display: flex; align-items: center; gap: 10px; padding: 0 8px; border-radius: 8px; color: var(--muted-foreground); font-size: 14px; }
+.nav-item .count { margin-left: auto; font-size: 12px; font-variant-numeric: tabular-nums; }
+.nav-item.active { background: var(--accent); color: var(--accent-foreground); font-weight: 500; }
+.nav-item .kbd { margin-left: auto; }
+.nav-group { padding: 14px 8px 4px; font-size: 12px; font-weight: 600; color: var(--muted-foreground); letter-spacing: 0.02em; }
+.dot { width: 8px; height: 8px; border-radius: 50%; margin: 0 6px 0 6px; flex: none; }
+.side-foot { margin-top: auto; }
+.listpane { flex: 1; min-width: 0; display: flex; flex-direction: column; border-right: 1px solid var(--border); }
+.list-head { padding: 20px 24px 12px; display: flex; align-items: baseline; gap: 10px; }
+.list-head h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
+.list-head .n { color: var(--muted-foreground); font-size: 14px; font-variant-numeric: tabular-nums; }
+.quickadd { margin: 0 24px 8px; height: 36px; border: 1px solid var(--border); border-radius: 8px; display: flex; align-items: center; gap: 8px; padding: 0 10px; color: var(--muted-foreground); font-size: 14px; }
+.quickadd .kbd { margin-left: auto; }
+.wrow { height: 36px; display: flex; align-items: center; gap: 10px; padding: 0 24px; font-size: 14px; border-radius: 0; position: relative; }
+.wrow .t { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.wrow .chips { flex-wrap: nowrap; }
+.wrow .chip { height: 20px; font-size: 11px; padding: 0 7px; }
+.wrow.focused { background: var(--accent); }
+.wrow.focused .t { color: var(--accent-foreground); font-weight: 500; }
+.wrow .hover-actions { display: flex; gap: 2px; color: var(--muted-foreground); }
+.wrow .hover-actions span { width: 26px; height: 26px; display: inline-flex; align-items: center; justify-content: center; border-radius: 6px; border: 1px solid var(--border); background: var(--card); }
+.wrow.hovered { background: var(--muted); }
+.wsection { padding: 14px 24px 4px; font-size: 13px; line-height: 20px; font-weight: 600; color: var(--muted-foreground); }
+.typedot { width: 16px; height: 16px; flex: none; display: inline-flex; align-items: center; justify-content: center; color: var(--muted-foreground); }
+.hintbar { margin-top: auto; border-top: 1px solid var(--border); padding: 8px 24px; display: flex; flex-wrap: wrap; gap: 14px; font-size: 12px; color: var(--muted-foreground); }
+.hintbar span { display: inline-flex; gap: 6px; align-items: center; }
+.detail { width: 400px; flex: none; display: flex; flex-direction: column; background: var(--background); }
+.detail-bar { height: 52px; display: flex; align-items: center; gap: 4px; padding: 0 12px 0 20px; border-bottom: 1px solid var(--border); color: var(--muted-foreground); }
+.detail-bar .grow { flex: 1; font-size: 12px; }
+.detail-bar .ib { width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px; }
+.detail-body { padding: 20px 24px; display: flex; flex-direction: column; gap: 16px; overflow: hidden; }
+.detail-body h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
+.detail-body .note { font-size: 16px; line-height: 26px; max-width: 720px; display: flex; flex-direction: column; gap: 12px; }
+.quote { padding: 10px 14px; border-radius: var(--radius-md); background: var(--muted); color: var(--foreground); font-size: 14px; line-height: 22px; }
+.source-line { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 13px; color: var(--muted-foreground); align-items: center; }
+.detail-foot { margin-top: auto; padding: 12px 24px; border-top: 1px solid var(--border); font-size: 12px; color: var(--muted-foreground); }
+
+/* sign-in */
+.signin { flex: 1; display: flex; align-items: center; justify-content: center; background: var(--sidebar); padding: 24px; }
+.signin-card { width: 100%; max-width: 380px; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 28px; display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center; }
+.signin-card h3 { font-size: 20px; line-height: 28px; font-weight: 600; }
+.bignum { font-size: 72px; line-height: 80px; font-weight: 600; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; color: var(--foreground); }
+.ringwrap { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--muted-foreground); font-variant-numeric: tabular-nums; }
+.ring { width: 28px; height: 28px; transform: rotate(-90deg); }
+.ring circle { fill: none; stroke-width: 3; }
+.ring .track { stroke: var(--border); }
+.ring .bar { stroke: var(--primary); stroke-linecap: round; }
+
+/* palette */
+.palette-scene { flex: 1; position: relative; display: flex; justify-content: center; padding-top: 70px; }
+.ghost-app { position: absolute; inset: 0; display: flex; }
+.ghost-app .g-side { width: 232px; background: var(--sidebar); border-right: 1px solid var(--border); }
+.ghost-app .g-main { flex: 1; padding: 28px; display: flex; flex-direction: column; gap: 14px; }
+.ghost-app .g-main span { height: 12px; border-radius: 6px; background: var(--muted); }
+.palette { position: relative; width: 560px; max-width: calc(100% - 32px); align-self: flex-start; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: 0 16px 48px rgba(0,0,0,0.18); overflow: hidden; }
+.palette-input { height: 52px; display: flex; align-items: center; gap: 10px; padding: 0 16px; border-bottom: 1px solid var(--border); font-size: 16px; }
+.palette-group { padding: 8px; display: flex; flex-direction: column; gap: 2px; }
+.palette-group .label { padding: 6px 8px; font-size: 12px; font-weight: 600; color: var(--muted-foreground); }
+.cmd { height: 40px; display: flex; align-items: center; gap: 10px; padding: 0 10px; border-radius: 8px; font-size: 14px; }
+.cmd .k { margin-left: auto; display: inline-flex; gap: 4px; }
+.cmd.sel { background: var(--accent); color: var(--accent-foreground); }
+.cmd u { text-decoration: none; font-weight: 600; }
+.palette-foot { border-top: 1px solid var(--border); padding: 8px 14px; display: flex; gap: 16px; font-size: 12px; color: var(--muted-foreground); }
+.palette-foot span { display: inline-flex; gap: 6px; align-items: center; }
+
+/* ---------- Extension ---------- */
+.ext-wrap { display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 380px; }
+.toolbar-mock { height: 40px; border-radius: 10px; background: var(--muted); border: 1px solid var(--border); display: flex; align-items: center; justify-content: flex-end; gap: 10px; padding: 0 10px; color: var(--muted-foreground); font-size: 12px; }
+.ext-icon { position: relative; width: 28px; height: 28px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; background: var(--background); border: 1px solid var(--border); }
+.ext-icon .logo { width: 18px; height: 18px; border-radius: 5px; }
+.ext-icon .logo svg { width: 12px; height: 12px; }
+.ext-badge { position: absolute; top: -6px; right: -8px; min-width: 16px; height: 16px; padding: 0 4px; border-radius: var(--radius-full); background: var(--primary); color: var(--primary-foreground); font-size: 10px; font-weight: 600; line-height: 16px; text-align: center; }
+.popup { width: 100%; max-width: 380px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 12px 32px rgba(0,0,0,0.12); display: flex; flex-direction: column; overflow: hidden; }
+.popup-head { height: 48px; display: flex; align-items: center; gap: 8px; padding: 0 8px 0 14px; border-bottom: 1px solid var(--border); font-weight: 600; }
+.popup-head .grow { flex: 1; }
+.popup-body { padding: 14px; display: flex; flex-direction: column; gap: 12px; }
+.textarea { min-height: 96px; border: 1px solid var(--ring); box-shadow: 0 0 0 3px var(--accent); border-radius: 8px; padding: 10px 12px; font-size: 15px; line-height: 22px; }
+.chip.removable { padding-right: 4px; }
+.toggles { display: flex; flex-wrap: wrap; gap: 6px; }
+.toggle { height: 30px; display: inline-flex; align-items: center; gap: 6px; padding: 0 10px; border-radius: var(--radius-full); border: 1px solid var(--border); font-size: 13px; color: var(--foreground); background: var(--card); }
+.toggle.on { background: var(--accent); border-color: transparent; color: var(--accent-foreground); }
+.popup-foot { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-top: 1px solid var(--border); font-size: 12px; color: var(--muted-foreground); }
+.panel { width: 100%; max-width: 360px; height: 640px; background: var(--background); border: 1px solid var(--border); border-radius: 12px; display: flex; flex-direction: column; overflow: hidden; }
+.tabs { display: flex; gap: 4px; padding: 10px 12px 0; border-bottom: 1px solid var(--border); }
+.tab { padding: 8px 10px 10px; font-size: 14px; font-weight: 500; color: var(--muted-foreground); border-bottom: 2px solid transparent; margin-bottom: -1px; }
+.tab[aria-selected="true"] { color: var(--foreground); border-bottom-color: var(--primary); }
+.panel-list { flex: 1; overflow: hidden; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+.pnote { border: 1px solid var(--border); border-radius: var(--radius-md); padding: 12px; display: flex; flex-direction: column; gap: 8px; background: var(--card); }
+.pnote b { font-size: 14px; font-weight: 600; }
+.pnote .foot { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted-foreground); }
+.panel-capture { border-top: 1px solid var(--border); padding: 12px; display: flex; flex-direction: column; gap: 8px; background: var(--sidebar); }
+.panel-capture .box { min-height: 56px; border: 1px solid var(--border); border-radius: 8px; background: var(--background); padding: 8px 10px; font-size: 14px; color: var(--muted-foreground); }
+.panel-capture .actions { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--muted-foreground); }
+
+/* ---------- Tokens reference ---------- */
+.tokens { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: var(--s4); }
+.panelcard { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: var(--s5); display: flex; flex-direction: column; gap: var(--s3); min-width: 0; }
+.panelcard h3 { font-size: 15px; font-weight: 600; }
+.swatch { display: grid; grid-template-columns: 28px 1fr auto; gap: 10px; align-items: center; font-size: 12px; }
+.swatch .live { width: 28px; height: 28px; border-radius: 8px; border: 1px solid var(--border); }
+.swatch code { font-family: var(--font-mono); font-size: 12px; overflow-wrap: anywhere; }
+.swatch .pair { display: inline-flex; gap: 4px; align-items: center; font-family: var(--font-mono); color: var(--muted-foreground); font-size: 11px; }
+.swatch .pair i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; border: 1px solid var(--border); }
+.typesample { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+.typesample small { font-family: var(--font-mono); font-size: 11px; color: var(--muted-foreground); white-space: nowrap; }
+.radii { display: flex; flex-wrap: wrap; gap: 12px; }
+.radii div { width: 64px; height: 48px; background: var(--accent); border: 1px solid var(--border); display: flex; align-items: flex-end; justify-content: center; font-family: var(--font-mono); font-size: 11px; color: var(--accent-foreground); padding-bottom: 4px; }
+.spacing { display: flex; flex-direction: column; gap: 6px; }
+.spacing div { display: flex; align-items: center; gap: 10px; font-family: var(--font-mono); font-size: 11px; color: var(--muted-foreground); }
+.spacing span { height: 10px; background: var(--primary); border-radius: 2px; }
+.footer-note { font-size: 13px; color: var(--muted-foreground); max-width: 760px; }
+</style>
+
+<!-- Lucide-style icon sprite (stroke 1.75, round caps). Real app: import from lucide-react / lucide-react-native. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="inbox" viewBox="0 0 24 24"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></symbol>
+    <symbol id="list-checks" viewBox="0 0 24 24"><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/></symbol>
+    <symbol id="notebook" viewBox="0 0 24 24"><path d="M2 6h4"/><path d="M2 10h4"/><path d="M2 14h4"/><path d="M2 18h4"/><rect width="16" height="20" x="4" y="2" rx="2"/><path d="M16 2v20"/></symbol>
+    <symbol id="plus" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5v14"/></symbol>
+    <symbol id="bell" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></symbol>
+    <symbol id="flag" viewBox="0 0 24 24"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22v-7"/></symbol>
+    <symbol id="folder" viewBox="0 0 24 24"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></symbol>
+    <symbol id="archive" viewBox="0 0 24 24"><rect width="20" height="5" x="2" y="3" rx="1"/><path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"/><path d="M10 12h4"/></symbol>
+    <symbol id="search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></symbol>
+    <symbol id="settings" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="mic" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><path d="M12 19v3"/></symbol>
+    <symbol id="check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+    <symbol id="lock" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
+    <symbol id="globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></symbol>
+    <symbol id="arrow-left" viewBox="0 0 24 24"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></symbol>
+    <symbol id="x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+    <symbol id="more-v" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></symbol>
+    <symbol id="more-h" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></symbol>
+    <symbol id="share" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.59 13.51 6.83 3.98"/><path d="m15.41 6.51-6.82 3.98"/></symbol>
+    <symbol id="circle-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></symbol>
+    <symbol id="calendar" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></symbol>
+    <symbol id="repeat" viewBox="0 0 24 24"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></symbol>
+    <symbol id="sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></symbol>
+    <symbol id="trash" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></symbol>
+    <symbol id="chevron-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+    <symbol id="chevron-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+    <symbol id="external" viewBox="0 0 24 24"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></symbol>
+    <symbol id="copy" viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></symbol>
+    <symbol id="download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></symbol>
+    <symbol id="shield" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></symbol>
+    <symbol id="key" viewBox="0 0 24 24"><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/></symbol>
+    <symbol id="cue" viewBox="0 0 24 24"><path d="M17 7.5A7 7 0 1 0 17 16.5" stroke-width="2.6"/><circle cx="18.6" cy="12" r="1.9" fill="currentColor" stroke="none"/></symbol>
+  </defs>
+</svg>
+
+<div class="page">
+
+  <header class="intro">
+    <div class="intro-text">
+      <span class="eyebrow">Cue · design reference</span>
+      <h1>Cue UI Mockups</h1>
+      <p>Pixel reference for the Android app, web app and Chrome extension. Every colour, size and radius here comes from the tokens in <code>docs/07-design/ui-ux-design.md §3</code>. Build from this; don't invent new styles.</p>
+    </div>
+    <div class="theme-toggle" role="group" aria-label="Theme">
+      <button type="button" id="theme-light" data-theme-choice="light" aria-pressed="false">Light</button>
+      <button type="button" id="theme-dark" data-theme-choice="dark" aria-pressed="false">Dark</button>
+      <button type="button" id="theme-system" data-theme-choice="system" aria-pressed="true">System</button>
+    </div>
+  </header>
+
+  <!-- ===================== A. MOBILE ===================== -->
+  <section class="section" aria-labelledby="mobile-h">
+    <div class="section-head">
+      <span class="eyebrow">A · Android app</span>
+      <h2 id="mobile-h">Mobile: capture first, three tabs, nothing extra</h2>
+      <p>One big + button on every tab. Swipe right turns an Inbox item into a todo, swipe left archives it, and long-press shows every action.</p>
+    </div>
+    <div class="gallery">
+
+      <!-- A1 Inbox -->
+      <figure class="figure" style="margin:0">
+        <div class="phone"><div class="screen">
+          <div class="statusbar"><span>10:42</span><span class="dots"><span></span><span></span></span></div>
+          <div class="topbar">
+            <h3>Inbox</h3>
+            <span class="iconbtn" aria-label="Search"><svg class="i" aria-hidden="true"><use href="#search"/></svg></span>
+            <span class="iconbtn" aria-label="Settings"><span class="avatar">R</span></span>
+          </div>
+          <div class="content">
+            <div class="list">
+              <div class="row">
+                <div class="body">
+                  <span class="title">Call electrician about the ceiling fan</span>
+                  <span class="chips"><span class="chip reminder"><svg class="i i-sm" aria-hidden="true"><use href="#bell"/></svg>Today 6:00 PM</span><span class="chip"><svg class="i i-sm" aria-hidden="true"><use href="#folder"/></svg>Home</span></span>
+                </div>
+              </div>
+              <div class="swipe">
+                <div class="action"><svg class="i" aria-hidden="true"><use href="#list-checks"/></svg>Todo</div>
+                <div class="row">
+                  <div class="body">
+                    <span class="title">Buy a gift for Riya's birthday</span>
+                    <span class="meta">Yesterday</span>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="body">
+                  <span class="title">Watch: Hindi typing shortcuts</span>
+                  <span class="chips"><span class="chip"><svg class="i i-sm" aria-hidden="true"><use href="#globe"/></svg>youtube.com</span></span>
+                </div>
+              </div>
+              <div class="row">
+                <div class="body">
+                  <span class="title">Idea: weekend trip to Lonavala</span>
+                  <span class="meta">2h ago</span>
+                </div>
+              </div>
+              <div class="row">
+                <div class="body">
+                  <span class="title">Ask Ankit for the GST invoice</span>
+                  <span class="chips"><span class="chip"><svg class="i i-sm" aria-hidden="true"><use href="#share"/></svg>WhatsApp</span></span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <span class="fab" aria-label="New note"><svg class="i" aria-hidden="true"><use href="#plus"/></svg></span>
+          <nav class="bottomnav" aria-label="Main">
+            <a href="#inbox" aria-current="page"><span class="pill"><svg class="i" aria-hidden="true"><use href="#inbox"/></svg></span>Inbox<span class="badge">5</span></a>
+            <a href="#todos"><span class="pill"><svg class="i" aria-hidden="true"><use href="#list-checks"/></svg></span>Todos</a>
+            <a href="#notes"><span class="pill"><svg class="i" aria-hidden="true"><use href="#notebook"/></svg></span>Notes</a>
+          </nav>
+        </div></div>
+        <figcaption class="caption"><strong>§6.3 Inbox</strong><span>Rows show only what exists: reminder, group, source. Row 2 is mid-swipe right, showing the indigo “Todo” action. The badge shows the Inbox count.</span></figcaption>
+      </figure>
+
+      <!-- A2 Capture -->
+      <figure class="figure" style="margin:0">
+        <div class="phone"><div class="screen">
+          <div class="statusbar"><span>10:43</span><span class="dots"><span></span><span></span></span></div>
+          <div class="capture-top">
+            <span class="iconbtn" aria-label="Close and save"><svg class="i" aria-hidden="true"><use href="#x"/></svg></span>
+            <span class="hint">Saves to Inbox</span>
+            <span class="iconbtn" aria-hidden="true"></span>
+          </div>
+          <div class="capture-field">Pay electricity bill <mark class="date">tomorrow 6pm</mark><span class="caret"></span></div>
+          <div class="preview"><span class="chip reminder removable"><svg class="i i-sm" aria-hidden="true"><use href="#bell"/></svg>Tomorrow, 6:00 PM<svg class="i i-sm" aria-label="Remove date"><use href="#x"/></svg></span></div>
+          <div class="accessory">
+            <span class="iconbtn" aria-label="Voice"><svg class="i" aria-hidden="true"><use href="#mic"/></svg></span>
+            <span class="iconbtn" aria-label="Reminder"><svg class="i" aria-hidden="true"><use href="#bell"/></svg></span>
+            <span class="iconbtn" aria-label="Make todo"><svg class="i" aria-hidden="true"><use href="#list-checks"/></svg></span>
+            <span class="spacer"></span>
+            <span class="btn primary">Save</span>
+          </div>
+          <div class="keyboard" aria-hidden="true">
+            <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+            <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+            <span class="w2"></span><span></span><span></span><span></span><span></span><span></span><span></span><span class="w2"></span>
+            <span class="w2"></span><span class="w6"></span><span class="w2"></span>
+          </div>
+        </div></div>
+        <figcaption class="caption"><strong>§6.4 Capture screen</strong><span>Opens with the keyboard up. The detected date is highlighted and turned into a removable chip. Back or × also saves, followed by “Saved to Inbox · Undo”.</span></figcaption>
+      </figure>
+
+      <!-- A3 Todos -->
+      <figure class="figure" style="margin:0">
+        <div class="phone"><div class="screen">
+          <div class="statusbar"><span>10:44</span><span class="dots"><span></span><span></span></span></div>
+          <div class="topbar">
+            <h3>Todos</h3>
+            <span class="iconbtn" aria-label="Search"><svg class="i" aria-hidden="true"><use href="#search"/></svg></span>
+            <span class="iconbtn" aria-label="Settings"><span class="avatar">R</span></span>
+          </div>
+          <div class="content">
+            <div class="banner"><svg class="i i-md" aria-hidden="true"><use href="#bell"/></svg><span class="grow">2 missed reminders</span><span class="link">View</span></div>
+            <div class="section-label overdue"><span>Overdue</span><span class="link">Reschedule</span></div>
+            <div class="row"><span class="check"></span><div class="body"><span class="title">Pay credit card bill</span><span class="chips"><span class="chip overdue">Overdue · Mon 6:00 PM</span></span></div></div>
+            <div class="section-label"><span>Today</span></div>
+            <div class="row"><span class="check"></span><div class="body"><span class="title">Renew bike insurance</span><span class="chips"><span class="chip reminder"><svg class="i i-sm" aria-hidden="true"><use href="#bell"/></svg>11:00 AM</span></span></div></div>
+            <div class="row"><span class="check done"><svg class="i i-sm" aria-hidden="true" style="stroke-width:2.5"><use href="#check"/></svg></span><div class="body"><span class="title done">Book Tatkal ticket to Pune</span></div></div>
+            <div class="row"><span class="check important"></span><div class="body"><span class="title">Call Mom</span><span class="chips"><span class="chip reminder"><svg class="i i-sm" aria-hidden="true"><use href="#bell"/></svg>8:00 PM</span><span class="chip important"><svg class="i i-sm" aria-hidden="true"><use href="#flag"/></svg>Important</span></span></div></div>
+            <div class="section-label"><span>Upcoming</span></div>
+            <div class="row"><span class="check"></span><div class="body"><span class="title">Submit expense report</span><span class="chips"><span class="chip reminder"><svg class="i i-sm" aria-hidden="true"><use href="#bell"/></svg>Fri 5:00 PM</span><span class="chip"><svg class="i i-sm" aria-hidden="true"><use href="#folder"/></svg>Work</span></span></div></div>
+            <div class="collapsed"><svg class="i i-md" aria-hidden="true"><use href="#chevron-right"/></svg>Completed (4)</div>
+          </div>
+          <span class="fab" aria-label="New todo"><svg class="i" aria-hidden="true"><use href="#plus"/></svg></span>
+          <nav class="bottomnav" aria-label="Main">
+            <a href="#inbox"><span class="pill"><svg class="i" aria-hidden="true"><use href="#inbox"/></svg></span>Inbox<span class="badge">5</span></a>
+            <a href="#todos" aria-current="page"><span class="pill"><svg class="i" aria-hidden="true"><use href="#list-checks"/></svg></span>Todos</a>
+            <a href="#notes"><span class="pill"><svg class="i" aria-hidden="true"><use href="#notebook"/></svg></span>Notes</a>
+          </nav>
+        </div></div>
+        <figcaption class="caption"><strong>§6.5 Todos</strong><span>Overdue, then Today, then Upcoming. Red is used only for overdue. Important items get an amber ring and flag. Completed items collapse at the bottom.</span></figcaption>
+      </figure>
+
+      <!-- A4 Editor -->
+      <figure class="figure" style="margin:0">
+        <div class="phone"><div class="screen">
+          <div class="statusbar"><span>10:45</span><span class="dots"><span></span><span></span></span></div>
+          <div class="topbar" style="padding-left:4px">
+            <span class="iconbtn" aria-label="Back"><svg class="i" aria-hidden="true"><use href="#arrow-left"/></svg></span>
+            <span style="flex:1"></span>
+            <span class="iconbtn" aria-label="Make todo"><svg class="i" aria-hidden="true"><use href="#list-checks"/></svg></span>
+            <span class="iconbtn" aria-label="Mark important"><svg class="i" aria-hidden="true"><use href="#flag"/></svg></span>
+            <span class="iconbtn" aria-label="More"><svg class="i" aria-hidden="true"><use href="#more-v"/></svg></span>
+          </div>
+          <div class="editor-title">Weekend trip plan</div>
+          <div class="editor-chips chips">
+            <span class="chip"><svg class="i i-sm" aria-hidden="true"><use href="#folder"/></svg>Travel</span>
+            <span class="chip">#ideas</span>
+            <span class="chip"><svg class="i i-sm" aria-hidden="true"><use href="#share"/></svg>WhatsApp</span>
+          </div>
+          <div class="editor-body">
+            <p>Lonavala or Alibaug. Decide by Thursday so we can still book.</p>
+            <div class="todo-line done"><span class="check square done"><svg class="i i-sm" aria-hidden="true" style="stroke-width:2.5"><use href="#check"/></svg></span><span>Check train timings</span></div>
+            <div class="todo-line"><span class="check square"></span><span>Book a homestay near the lake</span></div>
+            <div class="todo-line"><span class="check square"></span><span>Ask Priya if she's free<span class="caret"></span></span></div>
+          </div>
+          <span style="flex:1"></span>
+          <div class="accessory">
+            <span class="iconbtn" aria-label="Checklist"><svg class="i" aria-hidden="true"><use href="#list-checks"/></svg></span>
+            <span class="iconbtn" aria-label="Reminder"><svg class="i" aria-hidden="true"><use href="#bell"/></svg></span>
+            <span class="iconbtn" aria-label="Voice"><svg class="i" aria-hidden="true"><use href="#mic"/></svg></span>
+            <span class="iconbtn" aria-label="Group"><svg class="i" aria-hidden="true"><use href="#folder"/></svg></span>
+            <span class="spacer"></span>
+            <span class="btn ghost" style="color:var(--primary)">Done</span>
+          </div>
+          <div class="keyboard" aria-hidden="true" style="height:200px">
+            <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+            <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+            <span class="w2"></span><span class="w6"></span><span class="w2"></span>
+          </div>
+        </div></div>
+        <figcaption class="caption"><strong>§6.7 Note editor</strong><span>The first line is the title. Metadata appears as chips under the title. Tools sit above the keyboard only while typing. The top bar holds Todo, Important and More.</span></figcaption>
+      </figure>
+
+      <!-- A5 Reminder sheet -->
+      <figure class="figure" style="margin:0">
+        <div class="phone"><div class="screen">
+          <div class="statusbar"><span>10:46</span><span class="dots"><span></span><span></span></span></div>
+          <div class="topbar"><h3>Todos</h3></div>
+          <div class="list">
+            <div class="row"><span class="check"></span><div class="body"><span class="title">Renew bike insurance</span></div></div>
+            <div class="row"><span class="check"></span><div class="body"><span class="title">Submit expense report</span></div></div>
+          </div>
+          <div class="dim" aria-hidden="true"></div>
+          <div class="sheet" role="dialog" aria-label="Remind me">
+            <span class="grabber"></span>
+            <div><h4>Remind me</h4><p class="sub">Renew bike insurance</p></div>
+            <div class="quick">
+              <button type="button" id="q-later"><b>Later today</b><small>4:00 PM</small></button>
+              <button type="button" id="q-evening"><b>This evening</b><small>6:00 PM</small></button>
+              <button type="button" id="q-tomorrow"><b>Tomorrow</b><small>9:00 AM</small></button>
+              <button type="button" id="q-nextweek"><b>Next week</b><small>Mon 9:00 AM</small></button>
+            </div>
+            <div class="sheet-rows">
+              <div class="sheet-row"><svg class="i" aria-hidden="true"><use href="#calendar"/></svg><span class="grow">Pick date &amp; time</span><svg class="i i-md muted" aria-hidden="true"><use href="#chevron-right"/></svg></div>
+              <div class="sheet-row"><svg class="i" aria-hidden="true"><use href="#repeat"/></svg><span class="grow">Repeat</span><span class="value">None</span></div>
+              <div class="sheet-row"><svg class="i" aria-hidden="true" style="color:var(--important)"><use href="#flag"/></svg><span class="grow">Important<span class="sub">Keeps reminding until done</span></span><span class="switch" role="switch" aria-checked="true" aria-label="Important"></span></div>
+            </div>
+          </div>
+        </div></div>
+        <figcaption class="caption"><strong>§6.9 Reminder sheet</strong><span>Four quick picks cover most cases, based on the current time and office hours. One tap sets the reminder and closes the sheet. “Important” is the only extra decision.</span></figcaption>
+      </figure>
+
+      <!-- A6 Approve -->
+      <figure class="figure" style="margin:0">
+        <div class="phone"><div class="screen">
+          <div class="statusbar"><span>10:42</span><span class="dots"><span></span><span></span></span></div>
+          <div class="topbar" style="padding-left:4px"><span class="iconbtn" aria-label="Close"><svg class="i" aria-hidden="true"><use href="#x"/></svg></span></div>
+          <div class="center-stack">
+            <span class="shield"><svg class="i i-lg" aria-hidden="true"><use href="#shield"/></svg></span>
+            <div style="display:flex;flex-direction:column;gap:6px"><h3 style="font-size:20px;line-height:28px;font-weight:600">Sign-in request</h3><p class="muted" style="font-size:15px;line-height:22px">Someone is signing in to Cue as <b style="color:var(--foreground)">ravi</b>.</p></div>
+            <div class="device-card"><b>Chrome on Windows</b><span class="muted">Ahmedabad, IN · 10:42 AM</span></div>
+            <p style="font-size:16px;line-height:24px">Select the number shown on your other screen</p>
+            <div class="numbers"><button type="button" id="n17">17</button><button type="button" id="n42">42</button><button type="button" id="n88">88</button></div>
+            <p class="muted" style="font-size:13px;line-height:18px">You'll confirm with your fingerprint. A wrong number denies the request.</p>
+            <span style="flex:1"></span>
+            <span class="link" style="color:var(--destructive);text-align:center;font-size:15px">This wasn't me</span>
+          </div>
+        </div></div>
+        <figcaption class="caption"><strong>§6.11 Approve sign-in</strong><span>Number matching: the new device shows “42” and the phone offers three choices. Each target is 72 dp tall. A wrong pick denies the request and sends an alert.</span></figcaption>
+      </figure>
+
+      <!-- A7 Recovery -->
+      <figure class="figure" style="margin:0">
+        <div class="phone"><div class="screen">
+          <div class="statusbar"><span>10:40</span><span class="dots"><span></span><span></span></span></div>
+          <div class="center-stack" style="padding-top:28px">
+            <span class="steps">Step 2 of 3</span>
+            <div style="display:flex;flex-direction:column;gap:6px"><h3 style="font-size:20px;line-height:28px;font-weight:600">Save your recovery codes</h3><p class="muted" style="font-size:15px;line-height:22px">If you lose this phone, one code gets you back in. Each code works once.</p></div>
+            <div class="codes">
+              <span>K7QD-4MZP-X2RA</span><span>B9TW-FX3L-8NEC</span>
+              <span>MP2V-7HQK-RD5S</span><span>Z4XN-JC8T-6WYB</span>
+              <span>Q3RF-9LMD-2VKA</span><span>H6YB-TP4N-8CXE</span>
+              <span>W8KS-5DJR-3MQZ</span><span>E2NC-XV7F-9LTP</span>
+              <span>R5MA-2QWY-7HDK</span><span>T9LX-6BCE-4JNS</span>
+            </div>
+            <div class="btn-row">
+              <span class="btn outline"><svg class="i i-md" aria-hidden="true"><use href="#copy"/></svg>Copy</span>
+              <span class="btn outline"><svg class="i i-md" aria-hidden="true"><use href="#download"/></svg>Save</span>
+              <span class="btn outline"><svg class="i i-md" aria-hidden="true"><use href="#share"/></svg>Share</span>
+            </div>
+            <label class="checkline" for="saved-codes"><input type="checkbox" id="saved-codes" style="width:20px;height:20px;accent-color:var(--primary)"> I saved these codes</label>
+            <span style="flex:1"></span>
+            <span class="btn primary block" aria-disabled="true">Continue</span>
+          </div>
+        </div></div>
+        <figcaption class="caption"><strong>§6.13 Onboarding: recovery codes</strong><span>Continue stays disabled until the user has copied, saved or shared the codes and ticked the box. Codes use the mono font in a 2-column grid.</span></figcaption>
+      </figure>
+
+    </div>
+  </section>
+
+  <!-- ===================== B. WEB ===================== -->
+  <section class="section" aria-labelledby="web-h">
+    <div class="section-head">
+      <span class="eyebrow">B · Web app</span>
+      <h2 id="web-h">Web: three panes, keyboard first, calm sidebar</h2>
+      <p>A dim sidebar, a 36 px list and a detail panel on the right. Every action has a single-key shortcut, and the hint bar teaches them.</p>
+    </div>
+
+    <figure class="figure wide" style="margin:0">
+      <div class="scroll-x">
+        <div class="browser">
+          <div class="browser-bar"><span class="lights" aria-hidden="true"><span></span><span></span><span></span></span><span class="url">cue-api.workers.dev/inbox</span></div>
+          <div class="app">
+            <aside class="sidebar" aria-label="Sidebar">
+              <div class="brand"><span class="logo"><svg class="i" aria-hidden="true"><use href="#cue"/></svg></span>Cue</div>
+              <div class="side-actions">
+                <div class="nav-item" style="color:var(--foreground)"><svg class="i i-md" aria-hidden="true" style="color:var(--primary)"><use href="#plus"/></svg>Quick add<span class="kbd">Q</span></div>
+                <div class="nav-item"><svg class="i i-md" aria-hidden="true"><use href="#search"/></svg>Search<span class="kbd">/</span></div>
+              </div>
+              <div class="nav-item active"><svg class="i i-md" aria-hidden="true"><use href="#inbox"/></svg>Inbox<span class="count">12</span></div>
+              <div class="nav-item"><svg class="i i-md" aria-hidden="true"><use href="#sun"/></svg>Today<span class="count">4</span></div>
+              <div class="nav-item"><svg class="i i-md" aria-hidden="true"><use href="#calendar"/></svg>Upcoming</div>
+              <div class="nav-item"><svg class="i i-md" aria-hidden="true"><use href="#flag"/></svg>Important<span class="count">2</span></div>
+              <div class="nav-item"><svg class="i i-md" aria-hidden="true"><use href="#notebook"/></svg>All notes</div>
+              <div class="nav-group">Groups</div>
+              <div class="nav-item"><span class="dot" style="background:#0EA5E9"></span>Home<span class="count">9</span></div>
+              <div class="nav-item"><span class="dot" style="background:#6366F1"></span>Work<span class="count">17</span></div>
+              <div class="nav-item"><span class="dot" style="background:#F59E0B"></span>Travel<span class="count">5</span></div>
+              <div class="nav-group"></div>
+              <div class="nav-item"><svg class="i i-md" aria-hidden="true"><use href="#archive"/></svg>Archive</div>
+              <div class="nav-item"><svg class="i i-md" aria-hidden="true"><use href="#trash"/></svg>Trash</div>
+              <div class="side-foot"><div class="nav-item"><svg class="i i-md" aria-hidden="true"><use href="#settings"/></svg>Settings</div></div>
+            </aside>
+            <section class="listpane" aria-label="Inbox list">
+              <div class="list-head"><h3>Inbox</h3><span class="n">12</span></div>
+              <div class="quickadd"><svg class="i i-md" aria-hidden="true"><use href="#plus"/></svg>Add to Inbox…<span class="kbd">Q</span></div>
+              <div class="wsection">Today</div>
+              <div class="wrow"><span class="typedot"><svg class="i i-sm" aria-hidden="true"><use href="#notebook"/></svg></span><span class="t">Call electrician about the ceiling fan</span><span class="chips"><span class="chip reminder"><svg class="i i-sm" aria-hidden="true"><use href="#bell"/></svg>6:00 PM</span><span class="chip">Home</span></span></div>
+              <div class="wrow focused"><span class="typedot"><svg class="i i-sm" aria-hidden="true"><use href="#globe"/></svg></span><span class="t">Read: web push best practices</span><span class="chips"><span class="chip reminder"><svg class="i i-sm" aria-hidden="true"><use href="#bell"/></svg>Tomorrow 9:00 AM</span><span class="chip">Work</span></span></div>
+              <div class="wrow hovered"><span class="typedot"><svg class="i i-sm" aria-hidden="true"><use href="#notebook"/></svg></span><span class="t">Idea: weekend trip to Lonavala</span><span class="hover-actions" aria-label="Row actions"><span title="Make todo (T)"><svg class="i i-sm" aria-hidden="true"><use href="#list-checks"/></svg></span><span title="Remind (H)"><svg class="i i-sm" aria-hidden="true"><use href="#bell"/></svg></span><span title="Move to group (M)"><svg class="i i-sm" aria-hidden="true"><use href="#folder"/></svg></span><span title="Archive (E)"><svg class="i i-sm" aria-hidden="true"><use href="#archive"/></svg></span></span></div>
+              <div class="wrow"><span class="typedot"><svg class="i i-sm" aria-hidden="true"><use href="#share"/></svg></span><span class="t">Ask Ankit for the GST invoice</span><span class="chips"><span class="chip">WhatsApp</span></span></div>
+              <div class="wsection">Earlier</div>
+              <div class="wrow"><span class="typedot"><svg class="i i-sm" aria-hidden="true"><use href="#notebook"/></svg></span><span class="t">Buy a gift for Riya's birthday</span><span class="muted" style="font-size:12px">Yesterday</span></div>
+              <div class="wrow"><span class="typedot"><svg class="i i-sm" aria-hidden="true"><use href="#globe"/></svg></span><span class="t">Watch: Hindi typing shortcuts</span><span class="chips"><span class="chip">youtube.com</span></span></div>
+              <div class="wrow"><span class="typedot"><svg class="i i-sm" aria-hidden="true"><use href="#notebook"/></svg></span><span class="t">Compare term insurance plans (HDFC vs LIC)</span><span class="muted" style="font-size:12px">Mon</span></div>
+              <div class="wrow"><span class="typedot"><svg class="i i-sm" aria-hidden="true"><use href="#lock"/></svg></span><span class="t">Locked note</span><span class="muted" style="font-size:12px">Sun</span></div>
+              <div class="hintbar"><span><span class="kbd">E</span>Archive</span><span><span class="kbd">T</span>Todo</span><span><span class="kbd">H</span>Remind</span><span><span class="kbd">M</span>Move</span><span><span class="kbd">J</span><span class="kbd">K</span>Next / previous</span><span><span class="kbd">?</span>All shortcuts</span></div>
+            </section>
+            <aside class="detail" aria-label="Note detail">
+              <div class="detail-bar"><span class="grow">Inbox</span><span class="ib" aria-label="Make todo"><svg class="i i-md" aria-hidden="true"><use href="#list-checks"/></svg></span><span class="ib" aria-label="Important"><svg class="i i-md" aria-hidden="true"><use href="#flag"/></svg></span><span class="ib" aria-label="Archive"><svg class="i i-md" aria-hidden="true"><use href="#archive"/></svg></span><span class="ib" aria-label="More"><svg class="i i-md" aria-hidden="true"><use href="#more-h"/></svg></span><span class="ib" aria-label="Close"><svg class="i i-md" aria-hidden="true"><use href="#x"/></svg></span></div>
+              <div class="detail-body">
+                <h3>Read: web push best practices</h3>
+                <div class="chips"><span class="chip reminder"><svg class="i i-sm" aria-hidden="true"><use href="#bell"/></svg>Tomorrow 9:00 AM</span><span class="chip"><svg class="i i-sm" aria-hidden="true"><use href="#folder"/></svg>Work</span></div>
+                <div class="source-line"><span class="chip"><svg class="i i-sm" aria-hidden="true"><use href="#globe"/></svg>web.dev</span><a class="link" href="#detail">Open page ↗</a><a class="link" href="#detail">Jump to passage ↗</a></div>
+                <div class="note">
+                  <div class="quote">“A push subscription is tied to a service worker registration, so the worker must exist before you subscribe.”</div>
+                  <p>Use this for Cue's PC reminders. Check how the payload is encrypted before M3.</p>
+                </div>
+              </div>
+              <div class="detail-foot">Created Tue 21 Oct · from Chrome extension</div>
+            </aside>
+          </div>
+        </div>
+      </div>
+      <figcaption class="caption"><strong>§7.1–7.4 Three-pane Inbox</strong><span>The sidebar is 232 px. Rows are 36 px, with hover actions on the right, and the focused row uses the accent background. Enter opens the detail panel, and Ctrl+Enter opens it full page. Below 1100 px the detail panel overlays the list. The frame scrolls sideways on small screens.</span></figcaption>
+    </figure>
+
+    <div class="gallery" style="grid-template-columns:repeat(auto-fill,minmax(min(100%,520px),1fr))">
+      <figure class="figure wide" style="margin:0">
+        <div class="browser small" style="height:440px">
+          <div class="browser-bar"><span class="lights" aria-hidden="true"><span></span><span></span><span></span></span><span class="url">cue-api.workers.dev/login</span></div>
+          <div class="signin">
+            <div class="signin-card">
+              <span class="logo" style="width:36px;height:36px;border-radius:10px"><svg class="i" aria-hidden="true" style="width:22px;height:22px"><use href="#cue"/></svg></span>
+              <h3>Check your phone</h3>
+              <p class="muted" style="font-size:14px">Open the notification on your phone and select this number.</p>
+              <div class="bignum" aria-label="Number 42">42</div>
+              <div class="ringwrap">
+                <svg class="ring" viewBox="0 0 36 36" aria-hidden="true"><circle class="track" cx="18" cy="18" r="15"/><circle class="bar" cx="18" cy="18" r="15" stroke-dasharray="94.2" stroke-dashoffset="25"/></svg>
+                Expires in 1:47
+              </div>
+              <span class="link" style="font-size:14px">Use QR code instead</span>
+              <span class="muted" style="font-size:13px">Signing in as ravi · <span class="link" style="font-weight:400">Change</span></span>
+            </div>
+          </div>
+        </div>
+        <figcaption class="caption"><strong>§7.11 Sign-in: number screen</strong><span>A huge 2-digit number and a countdown ring. The QR code is the fallback. There's no password field anywhere.</span></figcaption>
+      </figure>
+
+      <figure class="figure wide" style="margin:0">
+        <div class="browser small" style="height:440px">
+          <div class="browser-bar"><span class="lights" aria-hidden="true"><span></span><span></span><span></span></span><span class="url">cue-api.workers.dev/inbox</span></div>
+          <div class="palette-scene">
+            <div class="ghost-app" aria-hidden="true"><div class="g-side"></div><div class="g-main"><span style="width:30%"></span><span></span><span style="width:80%"></span><span style="width:65%"></span><span style="width:75%"></span></div></div>
+            <div class="dim" aria-hidden="true"></div>
+            <div class="palette" role="dialog" aria-label="Command palette">
+              <div class="palette-input"><svg class="i muted" aria-hidden="true"><use href="#search"/></svg><span>rem</span><span class="caret" style="height:18px;vertical-align:-3px"></span><span class="kbd" style="margin-left:auto">Esc</span></div>
+              <div class="palette-group">
+                <span class="label">Actions</span>
+                <div class="cmd sel"><svg class="i i-md" aria-hidden="true"><use href="#bell"/></svg><span>Set <u>rem</u>inder…</span><span class="k"><span class="kbd">H</span></span></div>
+                <div class="cmd"><svg class="i i-md" aria-hidden="true"><use href="#x"/></svg><span><u>Rem</u>ove reminder</span></div>
+              </div>
+              <div class="palette-group" style="padding-top:0">
+                <span class="label">Go to</span>
+                <div class="cmd"><svg class="i i-md" aria-hidden="true"><use href="#bell"/></svg><span>Missed <u>rem</u>inders</span></div>
+                <div class="cmd"><svg class="i i-md" aria-hidden="true"><use href="#settings"/></svg><span>Settings · <u>Rem</u>inders &amp; office hours</span><span class="k"><span class="kbd">G</span><span class="kbd">S</span></span></div>
+              </div>
+              <div class="palette-foot"><span><span class="kbd">↑</span><span class="kbd">↓</span>Navigate</span><span><span class="kbd">Enter</span>Run</span><span><span class="kbd">Ctrl</span><span class="kbd">K</span>Close</span></div>
+            </div>
+          </div>
+        </div>
+        <figcaption class="caption"><strong>§7.7 Command palette</strong><span>Ctrl+K opens it anywhere. Matching is fuzzy, results are grouped, and each command shows its shortcut so users learn it.</span></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ===================== C. EXTENSION ===================== -->
+  <section class="section" aria-labelledby="ext-h">
+    <div class="section-head">
+      <span class="eyebrow">C · Chrome extension</span>
+      <h2 id="ext-h">Extension: one field, page attached, zero setup</h2>
+      <p>The popup captures in one keystroke, with the current page attached. The side panel shows notes for this page and follows the active tab.</p>
+    </div>
+    <div class="gallery" style="grid-template-columns:repeat(auto-fill,minmax(min(100%,380px),1fr))">
+
+      <figure class="figure" style="margin:0;max-width:380px">
+        <div class="ext-wrap">
+          <div class="toolbar-mock"><span>Toolbar</span><span class="ext-icon" title="Cue: 2 notes on this page"><span class="logo"><svg class="i" aria-hidden="true"><use href="#cue"/></svg></span><span class="ext-badge">2</span></span></div>
+          <div class="popup">
+            <div class="popup-head"><span class="logo"><svg class="i" aria-hidden="true"><use href="#cue"/></svg></span><span class="grow">Cue</span><span class="link" style="font-size:13px;font-weight:500">Inbox 12</span><span class="iconbtn" style="width:36px;height:36px" aria-label="More"><svg class="i i-md" aria-hidden="true"><use href="#more-h"/></svg></span></div>
+            <div class="popup-body">
+              <div class="textarea">Read later: best practices for web push permission prompts<span class="caret" style="height:18px;vertical-align:-3px"></span></div>
+              <span class="chip removable" style="align-self:flex-start;max-width:100%"><svg class="i i-sm" aria-hidden="true"><use href="#globe"/></svg><span style="overflow:hidden;text-overflow:ellipsis">web.dev · Push notifications overview</span><svg class="i i-sm" aria-label="Detach page"><use href="#x"/></svg></span>
+              <div class="toggles">
+                <span class="toggle"><svg class="i i-sm" aria-hidden="true"><use href="#list-checks"/></svg>Todo</span>
+                <span class="toggle on"><svg class="i i-sm" aria-hidden="true"><use href="#folder"/></svg>Work</span>
+                <span class="toggle"><svg class="i i-sm" aria-hidden="true"><use href="#flag"/></svg>Important</span>
+              </div>
+            </div>
+            <div class="popup-foot"><span><span class="kbd">Enter</span> to save · <span class="kbd">Shift</span>+<span class="kbd">Enter</span> new line</span><span class="btn primary web">Save</span></div>
+          </div>
+        </div>
+        <figcaption class="caption"><strong>§8.2 Popup (380 px)</strong><span>Opens with Alt+Shift+N. The field is autofocused, the page is attached as a removable chip, and the draft is kept on every keystroke. The badge shows notes linked to this page.</span></figcaption>
+      </figure>
+
+      <figure class="figure" style="margin:0">
+        <div class="panel">
+          <div class="tabs" role="tablist" aria-label="Side panel"><span class="tab" role="tab" aria-selected="true">This page (2)</span><span class="tab" role="tab" aria-selected="false">Inbox</span></div>
+          <div class="panel-list">
+            <div class="pnote">
+              <b>Push needs a service worker</b>
+              <div class="quote">“A push subscription is tied to a service worker registration.”</div>
+              <div class="foot"><a class="link" href="#ext-h">Jump to passage ↗</a><span>Saved 2 days ago</span></div>
+            </div>
+            <div class="pnote">
+              <div style="display:flex;gap:10px;align-items:flex-start"><span class="check" style="width:18px;height:18px;margin-top:1px"></span><b style="font-weight:500">Try the VAPID key setup for Cue</b></div>
+              <div class="chips"><span class="chip reminder"><svg class="i i-sm" aria-hidden="true"><use href="#bell"/></svg>Fri 11:00 AM</span><span class="chip">Work</span></div>
+              <div class="foot"><span>Whole site · web.dev</span><span>Today</span></div>
+            </div>
+          </div>
+          <div class="panel-capture">
+            <div class="box">Add a note about this page…</div>
+            <div class="actions"><span><span class="kbd">Enter</span> to save</span><span class="btn primary web">Save</span></div>
+          </div>
+        </div>
+        <figcaption class="caption"><strong>§8.4 Side panel (≥ 320 px)</strong><span>Opens with Alt+Shift+S. “This page” comes first and updates when you switch tabs. The capture box is pinned at the bottom.</span></figcaption>
+      </figure>
+
+    </div>
+  </section>
+
+  <!-- ===================== D. TOKENS ===================== -->
+  <section class="section" aria-labelledby="tok-h">
+    <div class="section-head">
+      <span class="eyebrow">D · Tokens</span>
+      <h2 id="tok-h">Token reference</h2>
+      <p>Each live swatch uses the current theme. The pairs show the light → dark values. Use the variable names exactly as written in Tailwind / NativeWind.</p>
+    </div>
+    <div class="tokens">
+      <div class="panelcard">
+        <h3>Surfaces &amp; text</h3>
+        <div class="swatch"><span class="live" style="background:var(--background)"></span><code>--background</code><span class="pair"><i style="background:#FFFFFF"></i>#FFFFFF <i style="background:#09090B"></i>#09090B</span></div>
+        <div class="swatch"><span class="live" style="background:var(--foreground)"></span><code>--foreground</code><span class="pair"><i style="background:#18181B"></i>#18181B <i style="background:#FAFAFA"></i>#FAFAFA</span></div>
+        <div class="swatch"><span class="live" style="background:var(--card)"></span><code>--card</code><span class="pair"><i style="background:#FFFFFF"></i>#FFFFFF <i style="background:#18181B"></i>#18181B</span></div>
+        <div class="swatch"><span class="live" style="background:var(--muted)"></span><code>--muted</code><span class="pair"><i style="background:#F4F4F5"></i>#F4F4F5 <i style="background:#27272A"></i>#27272A</span></div>
+        <div class="swatch"><span class="live" style="background:var(--muted-foreground)"></span><code>--muted-foreground</code><span class="pair"><i style="background:#63636B"></i>#63636B <i style="background:#A1A1AA"></i>#A1A1AA</span></div>
+        <div class="swatch"><span class="live" style="background:var(--border)"></span><code>--border</code><span class="pair"><i style="background:#E4E4E7"></i>#E4E4E7 <i style="background:#27272A"></i>#27272A</span></div>
+        <div class="swatch"><span class="live" style="background:var(--sidebar)"></span><code>--sidebar</code><span class="pair"><i style="background:#FAFAFA"></i>#FAFAFA <i style="background:#0F0F12"></i>#0F0F12</span></div>
+      </div>
+      <div class="panelcard">
+        <h3>Brand &amp; interaction</h3>
+        <div class="swatch"><span class="live" style="background:var(--primary)"></span><code>--primary</code><span class="pair"><i style="background:#4F46E5"></i>#4F46E5 <i style="background:#818CF8"></i>#818CF8</span></div>
+        <div class="swatch"><span class="live" style="background:var(--primary-foreground)"></span><code>--primary-foreground</code><span class="pair"><i style="background:#FFFFFF"></i>#FFFFFF <i style="background:#1E1B4B"></i>#1E1B4B</span></div>
+        <div class="swatch"><span class="live" style="background:var(--accent)"></span><code>--accent</code><span class="pair"><i style="background:#EEF2FF"></i>#EEF2FF <i style="background:#1E1B4B"></i>#1E1B4B</span></div>
+        <div class="swatch"><span class="live" style="background:var(--accent-foreground)"></span><code>--accent-foreground</code><span class="pair"><i style="background:#3730A3"></i>#3730A3 <i style="background:#C7D2FE"></i>#C7D2FE</span></div>
+        <div class="swatch"><span class="live" style="background:var(--ring)"></span><code>--ring</code><span class="pair"><i style="background:#6366F1"></i>#6366F1 <i style="background:#818CF8"></i>#818CF8</span></div>
+        <div class="swatch"><span class="live" style="background:var(--destructive)"></span><code>--destructive</code><span class="pair"><i style="background:#DC2626"></i>#DC2626 <i style="background:#DC2626"></i>#DC2626</span></div>
+      </div>
+      <div class="panelcard">
+        <h3>Cue meaning colours</h3>
+        <div class="swatch"><span class="live" style="background:var(--overdue)"></span><code>--overdue</code><span class="pair"><i style="background:#DC2626"></i>#DC2626 <i style="background:#F87171"></i>#F87171</span></div>
+        <div class="swatch"><span class="live" style="background:var(--important)"></span><code>--important</code><span class="pair"><i style="background:#B45309"></i>#B45309 <i style="background:#FBBF24"></i>#FBBF24</span></div>
+        <div class="swatch"><span class="live" style="background:var(--success)"></span><code>--success</code><span class="pair"><i style="background:#15803D"></i>#15803D <i style="background:#4ADE80"></i>#4ADE80</span></div>
+        <div class="swatch"><span class="live" style="background:var(--swipe-todo)"></span><code>--swipe-todo</code><span class="pair"><i style="background:#4F46E5"></i>#4F46E5 (both)</span></div>
+        <div class="swatch"><span class="live" style="background:var(--swipe-done)"></span><code>--swipe-done</code><span class="pair"><i style="background:#15803D"></i>#15803D (both)</span></div>
+        <div class="swatch"><span class="live" style="background:var(--swipe-archive)"></span><code>--swipe-archive</code><span class="pair"><i style="background:#52525B"></i>#52525B (both)</span></div>
+      </div>
+      <div class="panelcard">
+        <h3>Type: mobile (Inter)</h3>
+        <div class="typesample"><span style="font-size:20px;line-height:28px;font-weight:600">Title</span><small>20/28 · 600</small></div>
+        <div class="typesample"><span style="font-size:17px;line-height:24px;font-weight:600">Headline</span><small>17/24 · 600</small></div>
+        <div class="typesample"><span style="font-size:16px;line-height:24px">Body: Pay electricity bill</span><small>16/24 · 400</small></div>
+        <div class="typesample"><span style="font-size:14px;line-height:20px;font-weight:500">Label</span><small>14/20 · 500</small></div>
+        <div class="typesample"><span style="font-size:13px;line-height:18px" class="muted">Caption: 2h ago</span><small>13/18 · 400</small></div>
+      </div>
+      <div class="panelcard">
+        <h3>Type: web (Inter)</h3>
+        <div class="typesample"><span style="font-size:20px;line-height:28px;font-weight:600">Page title</span><small>20/28 · 600</small></div>
+        <div class="typesample"><span style="font-size:13px;line-height:20px;font-weight:600" class="muted">Section title</span><small>13/20 · 600</small></div>
+        <div class="typesample"><span style="font-size:14px;line-height:20px">UI text</span><small>14/20 · 400</small></div>
+        <div class="typesample"><span style="font-size:12px;line-height:16px">Small text</span><small>12/16 · 400</small></div>
+        <div class="typesample"><span style="font-size:16px;line-height:26px">Note body</span><small>16/26 · 400</small></div>
+        <div class="typesample"><span style="font-family:var(--font-mono);font-size:14px">K7QD-4MZP-X2RA</span><small>mono 14/20</small></div>
+      </div>
+      <div class="panelcard">
+        <h3>Radii &amp; spacing</h3>
+        <div class="radii">
+          <div style="border-radius:6px">sm 6</div>
+          <div style="border-radius:10px">md 10</div>
+          <div style="border-radius:14px">lg 14</div>
+          <div style="border-radius:20px">xl 20</div>
+          <div style="border-radius:999px">full</div>
+        </div>
+        <div class="spacing">
+          <div><span style="width:4px"></span>4</div>
+          <div><span style="width:8px"></span>8</div>
+          <div><span style="width:12px"></span>12</div>
+          <div><span style="width:16px"></span>16 · mobile screen padding</div>
+          <div><span style="width:24px"></span>24 · web content padding</div>
+          <div><span style="width:32px"></span>32</div>
+          <div><span style="width:48px"></span>48 · min touch target</div>
+        </div>
+      </div>
+    </div>
+    <p class="footer-note">Group dot colours in the web sidebar (sky, indigo, amber) are user-chosen group colours from the 8-colour group palette in the design doc. They are data, not theme tokens.</p>
+  </section>
+
+</div>
+
+<script>
+(function () {
+  var root = document.documentElement;
+  var buttons = document.querySelectorAll("[data-theme-choice]");
+  function apply(choice) {
+    if (choice === "light" || choice === "dark") root.setAttribute("data-theme", choice);
+    else root.removeAttribute("data-theme");
+    buttons.forEach(function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-theme-choice") === choice)); });
+  }
+  var saved = "system";
+  try { saved = localStorage.getItem("cue-mockups-theme") || "system"; } catch (e) {}
+  apply(saved);
+  buttons.forEach(function (b) {
+    b.addEventListener("click", function () {
+      var choice = b.getAttribute("data-theme-choice");
+      apply(choice);
+      try { localStorage.setItem("cue-mockups-theme", choice); } catch (e) {}
+    });
+  });
+})();
+</script>
